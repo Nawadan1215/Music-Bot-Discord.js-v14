@@ -5,7 +5,14 @@ const {
     Partials,
 } = require("discord.js");
 const fs = require("fs");
-const { token } = require("./config.json");
+
+// 環境変数から設定を取得
+const config = {
+    token: process.env.BOT_TOKEN,
+    prefix: process.env.BOT_PREFIX,
+    owner_id: process.env.OWNER_ID,
+    embed_color: process.env.EMBED_COLOR
+};
 
 const client = new Client({
     intents: [
@@ -43,7 +50,9 @@ client.category = new Collection();
 client.buttons = new Collection();
 client.selectMenus = new Collection();
 client.commandArray = [];
-client.config = require("./config.json");
+
+// config.jsonの代わりに環境変数から取得したconfigを使用
+client.config = config;
 
 const functionFolders = fs.readdirSync("./functions");
 for (const folder of functionFolders) {
@@ -55,18 +64,18 @@ for (const folder of functionFolders) {
         require(`./functions/${folder}/${file}`)(client);
 }
 
-require ("./distube/index");
+require("./distube/index");
 
 client.handleEvents();
 client.handleComponents();
 client.handleCommands();
 
-//anticrash
+// anticrash
 process.on("unhandledRejection", (reason, p) => {
-    console.log(reason, p)
-})
+    console.log(reason, p);
+});
 process.on("uncaughtException", (err, origin) => {
-    console.log(err, origin)
-})
+    console.log(err, origin);
+});
 
-client.login(token);
+client.login(config.token);
